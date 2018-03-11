@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<link rel="stylesheet" type="text/css"
+	href="../js/easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css"
+	href="../js/easyui/themes/icon.css">
+<script type="text/javascript" src="../js/jquery-1.8.3.js"></script>
+<script type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+
+<script type="text/javascript">
+	/* //入口函数
+	function addTabs() {
+		//如果已经有了这个选线卡,那么就让他这个页面
+		//否者就创建
+		
+		//判断要添加的选项卡是否存在
+		var result = $('#tt').tabs("exists","新选项卡面板")
+		
+		//如果有这个选项,那么就选中
+		if (result) {
+			$('#tt').tabs("select","新选项卡面板")
+		}else {
+			//如果没有就创建
+			$('#tt').tabs('add',{
+				title: '新选项卡面板',
+				selected: true
+			});
+		}
+		
+		
+		
+	} */
+	
+	
+	//入口函数
+	function addTabs() {
+		//判断选项卡是否存在
+		var result = $("#tt").tabs("exists","新建选项卡")
+		//如果选项存在就选中当前的选项卡
+		if (result) {
+			$("#tt").tabs("select","new card")
+		} else {
+			//如果不存在就创建
+			$('#tt').tabs('add',{    
+			    title:'新建选项卡',    
+			    selected:true   
+			});
+		}
+		
+	}
+	
+	
+</script>
+
+<body class="easyui-layout">
+
+
+	<div data-options="region:'north'" style="height: 50px"></div>
+	<div data-options="region:'south',split:true" style="height: 50px;"></div>
+	<div data-options="region:'east',split:true" title="East"
+		style="width: 100px;"></div>
+	<div data-options="region:'west',split:true" title="菜单栏"
+		style="width: 250px;">
+
+		<div class="easyui-accordion" data-options="fit:true">
+			<div title="About" style="overflow: auto; padding: 10px;">
+				<a id="btn" href="#" class="easyui-linkbutton" onclick="addTabs()"
+					data-options="iconCls:'icon-search'">添加选项卡</a>
+			</div>
+			<div title="Help" style="padding: 10px;"></div>
+			<div title="TreeMenu" style="padding: 10px;"></div>
+		</div>
+
+	</div>
+	<div  data-options="region:'center',title:'内容区',iconCls:'icon-ok'">
+
+		<div class="easyui-tabs" data-options="fit:true" id="tt">
+			<div title="About" style="padding: 10px"></div>
+			<div title="My Documents" style="padding: 10px"></div>
+			<div title="Help"  style="padding: 10px"></div>
+			
+		</div>
+		
+	</div>
+
+
+</body>
+</html>
