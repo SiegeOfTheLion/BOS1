@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<link rel="stylesheet" type="text/css"
+	href="../js/easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css"
+	href="../js/easyui/themes/icon.css">
+<link rel="stylesheet" type="text/css" href="../js/ztree/zTreeStyle.css">
+<script type="text/javascript" src="../js/jquery-1.8.3.js"></script>
+<script type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../js/ztree/jquery.ztree.all-3.5.js"></script>
+
+<script type="text/javascript">
+	/* //入口函数
+	function addTabs() {
+		//如果已经有了这个选线卡,那么就让他这个页面
+		//否者就创建
+		
+		//判断要添加的选项卡是否存在
+		var result = $('#tt').tabs("exists","新选项卡面板")
+		
+		//如果有这个选项,那么就选中
+		if (result) {
+			$('#tt').tabs("select","新选项卡面板")
+		}else {
+			//如果没有就创建
+			$('#tt').tabs('add',{
+				title: '新选项卡面板',
+				selected: true
+			});
+		}
+		
+		
+		
+	} */
+
+	//入口函数
+	function addTabs() {
+		//判断选项卡是否存在
+		var result = $("#tt").tabs("exists", "新建选项卡")
+		//如果选项存在就选中当前的选项卡
+		if (result) {
+			$("#tt").tabs("select", "new card")
+		} else {
+			//如果不存在就创建
+			$('#tt').tabs('add', {
+				title : '新建选项卡',
+				selected : true
+			});
+		}
+
+	}
+
+	$(function() {
+		var setting = {
+				data: {
+					simpleData: {
+						enable: true,
+						idKey: "id",
+						pIdKey: "pId",
+						rootPId: 0
+					}
+				}
+		};
+		var zNodes = [ {
+			id : 1,
+			pId : 0,
+			name : "父节点1 - 展开",
+			open : true
+		}, {
+			id : 11,
+			pId : 1,
+			name : "父节点11 - 折叠"
+		}, {
+			id : 111,
+			pId : 11,
+			name : "叶子节点111"
+		}, {
+			id : 112,
+			pId : 11,
+			name : "叶子节点112"
+		}, {
+			id : 113,
+			pId : 11,
+			name : "叶子节点113"
+		}, {
+			id : 114,
+			pId : 11,
+			name : "叶子节点114"
+		}, {
+			id : 12,
+			pId : 1,
+			name : "父节点12 - 折叠"
+		}, {
+			id : 121,
+			pId : 12,
+			name : "叶子节点121"
+		}, {
+			id : 122,
+			pId : 12,
+			name : "叶子节点122"
+		}, {
+			id : 123,
+			pId : 12,
+			name : "叶子节点123"
+		}, {
+			id : 124,
+			pId : 12,
+			name : "叶子节点124"
+		}, {
+			id : 13,
+			pId : 1,
+			name : "父节点13 - 没有子节点",
+			isParent : true
+		}, {
+			id : 2,
+			pId : 0,
+			name : "父节点2 - 折叠"
+		}, {
+			id : 21,
+			pId : 2,
+			name : "父节点21 - 展开",
+			open : true
+		}, {
+			id : 211,
+			pId : 21,
+			name : "叶子节点211"
+		}, {
+			id : 212,
+			pId : 21,
+			name : "叶子节点212"
+		}, {
+			id : 213,
+			pId : 21,
+			name : "叶子节点213"
+		}, {
+			id : 214,
+			pId : 21,
+			name : "叶子节点214"
+		}, {
+			id : 22,
+			pId : 2,
+			name : "父节点22 - 折叠"
+		}, {
+			id : 221,
+			pId : 22,
+			name : "叶子节点221"
+		}, {
+			id : 222,
+			pId : 22,
+			name : "叶子节点222"
+		}, {
+			id : 223,
+			pId : 22,
+			name : "叶子节点223"
+		}, {
+			id : 224,
+			pId : 22,
+			name : "叶子节点224"
+		}, {
+			id : 23,
+			pId : 2,
+			name : "父节点23 - 折叠"
+		}, {
+			id : 231,
+			pId : 23,
+			name : "叶子节点231"
+		}, {
+			id : 232,
+			pId : 23,
+			name : "叶子节点232"
+		}, {
+			id : 233,
+			pId : 23,
+			name : "叶子节点233"
+		}, {
+			id : 234,
+			pId : 23,
+			name : "叶子节点234"
+		}, {
+			id : 3,
+			pId : 0,
+			name : "父节点3 - 没有子节点",
+			isParent : true
+		} ];
+
+		$.fn.zTree.init($("#treeDemo"), setting, zNodes);
+	})
+</script>
+
+<body class="easyui-layout">
+
+	<div data-options="region:'north'" style="height: 50px"></div>
+	<div data-options="region:'south',split:true" style="height: 50px;"></div>
+	<div data-options="region:'east',split:true" title="East"
+		style="width: 100px;"></div>
+	<div data-options="region:'west',split:true" title="菜单栏"
+		style="width: 250px;">
+		<div class="easyui-accordion" data-options="fit:true">
+			<div title="About" style="overflow: auto; padding: 10px;">
+				<a id="btn" href="#" class="easyui-linkbutton" onclick="addTabs()"
+					data-options="iconCls:'icon-search'">添加选项卡</a>
+			</div>
+			<div title="Help" style="padding: 10px;"></div>
+			<div title="TreeMenu" style="padding: 10px;">
+				<ul id="treeDemo" class="ztree"></ul>
+			</div>
+		</div>
+
+	</div>
+	<div data-options="region:'center',title:'内容区',iconCls:'icon-ok'">
+
+		<div class="easyui-tabs" data-options="fit:true" id="tt">
+			<div title="About" style="padding: 10px"></div>
+			<div title="My Documents" style="padding: 10px"></div>
+			<div title="Help" style="padding: 10px"></div>
+
+		</div>
+
+	</div>
+
+</body>
+</html>
