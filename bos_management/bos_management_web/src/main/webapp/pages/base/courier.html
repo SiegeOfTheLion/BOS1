@@ -28,15 +28,28 @@
 	}
 
 	function doEdit() {
-		alert("修改...");
+		//alert("修改...")
+		//$("#standardWindow").window("open")
+		//alert('作废');
+		//判断用户勾选的数据的条数
+		var result = $("#grid").datagrid("getSelections");
+		if (result.length == 1) {
+			//只有当勾选了一条数据之后才能进行修改
+			//打开窗口
+			$("#addWindow").window("open")
+			//数据回显
+			$("#courierForm").form("load", result[0])
+		} else {
+			$.messager.alert("提示", "必须也只能选择一条数据进行修改", "info")
+		}
 	}
 
 	function doDelete() {
 		//alert("删除...");
 		//判断是否选中
-		var result = $("#grid").datagrid("getSelections")
+		var rows = $("#grid").datagrid("getSelections")
 		//如果结果的总长度等于零的话,就给提示说最少要选一个
-		if (result.length == 0) {
+		if (rows.length == 0) {
 			//提示语言
 			$.messager.alert("提示", "你最少要选中一条数据,执行删除!", "info")
 		} else {
@@ -53,22 +66,67 @@
 								//alert(r)
 								if (r) {
 									//创建一个数组
+
+									//alert(r)
 									var arr = new Array();
 									for (var i = 0; i < rows.length; i++) {
-										arr.put(rows[0].id)
+										arr.push(rows[i].id)
+
 									}
 									// 如何发送请求
 									//form表单, AJAX, window.location.href
-									window.location.href = "../../courierAction_batchdel.action?ids"
+									window.location.href = "../../courierAction_batchDel.action?ids="
 											+ arr.toString()
+
 								}
 							})
 		}
 	}
 
 	function doRestore() {
-		alert("将取派员还原...");
+		//alert("将取派员还原...");
+		//alert("删除...");
+		//判断是否选中
+		var rows = $("#grid").datagrid("getSelections")
+		//如果结果的总长度等于零的话,就给提示说最少要选一个
+		if (rows.length == 0) {
+			//提示语言
+			$.messager.alert("提示", "你最少要选中一条数据,执行还原操作!", "info")
+		} else {
+			//这是还原操作
+			//不能直接执行还原,要有一个确认框提示是否真的还原
+			$.messager
+					.confirm(
+							"还原对话框",
+							"你是认真的吗?",
+							//如果是认真的,那么就执行还原操作
+							//匿名函数
+							function(r) {
+								//如果是认真的,r-->true or false
+								//alert(r)
+								if (r) {
+									//创建一个数组
+
+									//alert(r)
+									var arr = new Array();
+									for (var i = 0; i < rows.length; i++) {
+										arr.push(rows[i].id)
+
+									}
+									// 如何发送请求
+									//form表单, AJAX, window.location.href
+									window.location.href = "../../courierAction_batchRes.action?ids="
+											+ arr.toString()
+
+								}
+							})
+		}
 	}
+
+	
+	
+	
+	
 	//工具栏
 	var toolbar = [ {
 		id : 'button-add',
@@ -234,6 +292,7 @@
 			border="false">
 			<form id="courierForm" method="post"
 				action="../../courierAction_save.action">
+				<input type="hidden" name="id" value="id">
 				<table class="table-edit" width="80%" align="center">
 					<tr class="title">
 						<td colspan="4">收派员信息</td>
