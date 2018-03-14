@@ -19,10 +19,10 @@
 		#########################################################
 	-->
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
-		<property name="driverClass" value="oracle.jdbc.driver.OracleDriver" />
-		<property name="jdbcUrl" value="jdbc:oracle:thin:@10.10.10.100:1521:ORCL" />
-		<property name="user" value="heima28" />
-		<property name="password" value="heima28" />
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+		<property name="jdbcUrl" value="jdbc:mysql:///bos" />
+		<property name="user" value="root" />
+		<property name="password" value="123456" />
 	</bean>
 	<!-- spring整合JPA -->
 	<bean id="entityManagerFactory"
@@ -42,8 +42,8 @@
 			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
 				<!-- 自动建表 -->
 				<property name="generateDdl" value="true" />
-				<property name="database" value="ORACLE" />
-				<property name="databasePlatform" value="org.hibernate.dialect.Oracle10gDialect" />
+				<property name="database" value="MYSQL" />
+				<property name="databasePlatform" value="org.hibernate.dialect.MySQLDialect" />
 				<property name="showSql" value="true" />
 			</bean>
 		</property>
