@@ -27,13 +27,14 @@ public class StandardServiceImpl implements StandardService {
     public void save(Standard standard) {
         standardRepository.save(standard);
     }
+    /**
+     * 分页查询和局部查询
+     */
     @Override
     public Page<Standard> findAll(Pageable pageable) {
           
         return standardRepository.findAll(pageable);
     }
-    
-    
     
 }
   

@@ -14,7 +14,7 @@ public interface StandardService {
 
     void save(Standard standard);
 
-    Page<Standard> findAll(Pageable pageable); 
+    Page<Standard> findAll(Pageable pageable);
 
 }
   

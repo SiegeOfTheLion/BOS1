@@ -24,6 +24,7 @@ import com.itheima.bos.service.base.StandardService;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.ModelDriven;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
@@ -53,7 +54,7 @@ public class StandardAction extends ActionSupport
      * 
      * 
      * 3.因为SpringDataJPA的save方法有修改功能,所以这里会自动实现修改并保存
-     *  
+     * 
      * @return
      */
     @Action(value = "standardAction_save", results = {@Result(name = "success",
@@ -80,19 +81,19 @@ public class StandardAction extends ActionSupport
     }
 
     // ajax请求,不需要跳转页面
-    @Action("standardAction.pageQuery")
-    public String findAll() throws IOException{
+    @Action("standardAction_pageQuery")
+    public String pageQuery() throws IOException {
         // EasyUI的页码是从1开始的
         // SPringDataJPA的页码是从0开始的
         // 所以要-1
-        Pageable pageable = new PageRequest(page-1, rows);
-        //封装数据
+        Pageable pageable = new PageRequest(page - 1, rows);
+        // 封装数据
         Page<Standard> page = standardService.findAll(pageable);
-        //总数据条数
+        // 总数据条数
         long total = page.getTotalElements();
-        //当前页面要实现的内容
+        // 当前页面要实现的内容
         List<Standard> list = page.getContent();
-        //封装数据
+        // 封装数据
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("total", total);
         map.put("rows", list);
@@ -100,16 +101,37 @@ public class StandardAction extends ActionSupport
         // JSONArray : 数组,list集合
         // 把对象转化为json字符串
         String json = JSONObject.fromObject(map).toString();
-        //输出流写出去
-        //获取到response
-        //解决中文乱码的问题
-        
+        // 输出流写出去
+        // 获取到response
+        // 解决中文乱码的问题
+
         HttpServletResponse response = ServletActionContext.getResponse();
         response.setContentType("application/json;charset=UTF-8");
-        //响应页面
+        // 响应页面
         response.getWriter().write(json);
         return NONE;
     }
-    
+
+    /**
+     * 动态获取快递员设置的局部查询 findAll:. <br/>
+     * 
+     * @return
+     * @throws IOException 
+     */
+    @Action("standard_findAll")
+    public String findAll() throws IOException {
+        // 查询
+        Page<Standard> page = standardService.findAll(null);
+        // 获取页面数据
+        List<Standard> list = page.getContent();
+        // JSONArray : 数组,list集合
+        String json = JSONArray.fromObject(list).toString();
+        // 查询的数据要写出去
+        HttpServletResponse response = ServletActionContext.getResponse();
+        //解决中文乱码
+        response.setContentType("application/json;charset=UTF-8");
+        response.getWriter().write(json);
+        return NONE;
+    }
 
 }
