@@ -26,6 +26,10 @@
 	function doAdd() {
 		$('#addWindow').window("open");
 	}
+	//条件查询
+	function openSearchWindow() {
+		$('#searchWindow').window("open");
+	}
 
 	function doEdit() {
 		//alert("修改...")
@@ -148,6 +152,11 @@
 		text : '还原',
 		iconCls : 'icon-save',
 		handler : doRestore
+	}, {//定义条件查询语句
+		id : 'button-search',
+		text : '查询',
+		iconCls : 'icon-search',
+		handler : openSearchWindow
 	} ];
 	// 定义列
 	var columns = [ [ {
@@ -270,6 +279,34 @@
 			$("#courierForm").submit();
 		}
 	}
+	//将表单中的数据序列化为json对象
+	$.fn.serializeJson = function() {
+		var serializeObj = {};
+		var array = this.serializeArray();
+		var str = this.serialize();
+		$(array).each(
+				function() {
+					if (serializeObj[this.name]) {
+						if ($.isArray(serializeObj[this.name])) {
+							serializeObj[this.name].push(this.value);
+						} else {
+							serializeObj[this.name] = [
+									serializeObj[this.name], this.value ];
+						}
+					} else {
+						serializeObj[this.name] = this.value;
+					}
+				});
+		return serializeObj;
+	};
+	
+	//执行查询
+	function doSearch() {
+		//把form表单中input节点的name的值和用户输入的内容,拼接成json字符串
+		var result = $("#searchForm").serializeJson();
+		//使用表单数据重新提交
+		$("#grid").datagrid("load",result)
+	}
 </script>
 </head>
 
@@ -364,7 +401,7 @@
 	</div>
 
 	<!-- 查询快递员-->
-	<div class="easyui-window" title="查询快递员窗口" closed="true"
+	<div class="easyui-window" title="查询快递员窗口" closed="true" modal="true"
 		id="searchWindow" collapsible="false" minimizable="false"
 		maximizable="false" style="width: 400px; top: 40px; left: 200px">
 		<div style="overflow: auto; padding: 5px;" border="false">
@@ -399,7 +436,7 @@
 					</tr>
 					<tr>
 						<td colspan="2">
-							<a id="searchBtn" href="#" class="easyui-linkbutton"
+							<a id="searchBtn" onclick="doSearch()" href="#" class="easyui-linkbutton"
 								data-options="iconCls:'icon-search'">查询</a>
 						</td>
 					</tr>
