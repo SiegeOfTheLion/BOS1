@@ -100,6 +100,11 @@ public class Area {
     public void setSubareas(Set<SubArea> subareas) {
         this.subareas = subareas;
     }
+    
+    //添加一个方法getName
+    public String getName(){
+        return province+city+district;
+    }
 
     @Override
     public String toString() {

@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
@@ -46,10 +47,9 @@ import net.sf.json.JsonConfig;
 @Scope("prototype")
 public class AreaAction extends CommonAction<Area> {
 
-    public AreaAction(){
+    public AreaAction() {
         super(Area.class);
     }
-
 
     @Autowired
     private AreaService areaService;
@@ -131,29 +131,59 @@ public class AreaAction extends CommonAction<Area> {
         }
         return SUCCESS;
     }
-    //属性
+
+    // 属性
     private int page;
     private int rows;
+
     public void setPage(int page) {
         this.page = page;
     }
+
     public void setRows(int rows) {
         this.rows = rows;
     }
 
     @Action("areaAction_pageQuery")
     public String pageQuery() throws IOException {
-        
-        //创建pageable对象
-        Pageable pageable = new PageRequest(page-1, rows);
-        //查询
+
+        // 创建pageable对象
+        Pageable pageable = new PageRequest(page - 1, rows);
+        // 查询
         Page<Area> page = areaService.findAll(pageable);
-        
+
         JsonConfig jsonConfig = new JsonConfig();
         jsonConfig.setExcludes(new String[] {"subareas"});
-        
+
         page2json(page, jsonConfig);
-        
+
+        return NONE;
+    }
+
+    // 使用属性驱动获取用户输入的数据
+    private String q;
+
+    public void setQ(String q) {
+        this.q = q;
+    }
+
+    @Action(value = "areaAction_findAll")
+    public String findAll() throws IOException {
+        /* 构建一个list集合用来存对象 */
+        List<Area> list = null;
+        // 不是分页查询
+        if (StringUtils.isNotEmpty(q)) {
+            //根据用户输入的进行模糊查询
+            list = areaService.findByQ(q);
+        } else {
+            // 如果用户输入为空,那么就查询所有的
+            Page<Area> page = areaService.findAll(null);
+            list = page.getContent();
+        }
+        //灵活控制输出的内容
+        JsonConfig jsonConfig = new JsonConfig();
+        jsonConfig.setExcludes(new String[] {"subareas"});
+        list2json(list, jsonConfig);
         return NONE;
     }
 

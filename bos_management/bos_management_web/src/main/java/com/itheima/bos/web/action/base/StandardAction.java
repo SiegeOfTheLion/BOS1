@@ -21,6 +21,7 @@ import org.springframework.stereotype.Controller;
 
 import com.itheima.bos.domain.base.Standard;
 import com.itheima.bos.service.base.StandardService;
+import com.itheima.bos.web.action.CommonAction;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.ModelDriven;
 
@@ -36,14 +37,12 @@ import net.sf.json.JSONObject;
 @Namespace("/")
 @ParentPackage("struts-default")
 @Scope("prototype")
-public class StandardAction extends ActionSupport
-        implements ModelDriven<Standard> {
+public class StandardAction extends CommonAction<Standard> {
 
-    private Standard model = new Standard();
+   
 
-    @Override
-    public Standard getModel() {
-        return model;
+    public StandardAction() {
+        super(Standard.class);  
     }
 
     @Autowired
@@ -60,7 +59,7 @@ public class StandardAction extends ActionSupport
     @Action(value = "standardAction_save", results = {@Result(name = "success",
             location = "/pages/base/standard.html", type = "redirect")})
     public String save() {
-        standardService.save(model);
+        standardService.save(getModel());
         // 因为是ajax请求,所以返回值为NONE
         return SUCCESS;
     }
@@ -68,17 +67,6 @@ public class StandardAction extends ActionSupport
     /**
      * 分页查询
      */
-
-    private int page;
-    private int rows;
-
-    public void setPage(int page) {
-        this.page = page;
-    }
-
-    public void setRows(int rows) {
-        this.rows = rows;
-    }
 
     // ajax请求,不需要跳转页面
     @Action("standardAction_pageQuery")
@@ -89,26 +77,14 @@ public class StandardAction extends ActionSupport
         Pageable pageable = new PageRequest(page - 1, rows);
         // 封装数据
         Page<Standard> page = standardService.findAll(pageable);
-        // 总数据条数
-        long total = page.getTotalElements();
-        // 当前页面要实现的内容
-        List<Standard> list = page.getContent();
-        // 封装数据
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("total", total);
-        map.put("rows", list);
         // JSONObject : 封装对象或map集合
         // JSONArray : 数组,list集合
         // 把对象转化为json字符串
-        String json = JSONObject.fromObject(map).toString();
         // 输出流写出去
         // 获取到response
         // 解决中文乱码的问题
 
-        HttpServletResponse response = ServletActionContext.getResponse();
-        response.setContentType("application/json;charset=UTF-8");
-        // 响应页面
-        response.getWriter().write(json);
+       page2json(page, null);
         return NONE;
     }
 

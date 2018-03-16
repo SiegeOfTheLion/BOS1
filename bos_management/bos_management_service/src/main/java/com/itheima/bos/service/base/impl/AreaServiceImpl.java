@@ -12,17 +12,17 @@ import com.itheima.bos.dao.base.AreaRepository;
 import com.itheima.bos.domain.base.Area;
 import com.itheima.bos.service.base.AreaService;
 
-/**  
- * ClassName:AreaServiceImpl <br/>  
- * Function:  <br/>  
- * Date:     2018年3月15日 下午7:45:34 <br/>       
+/**
+ * ClassName:AreaServiceImpl <br/>
+ * Function: <br/>
+ * Date: 2018年3月15日 下午7:45:34 <br/>
  */
 @Transactional
 @Service
 public class AreaServiceImpl implements AreaService {
     @Autowired
     private AreaRepository areaRepository;
-    
+
     @Override
     public void save(List<Area> list) {
         areaRepository.save(list);
@@ -30,9 +30,15 @@ public class AreaServiceImpl implements AreaService {
 
     @Override
     public Page<Area> findAll(Pageable pageable) {
-          
+
         return areaRepository.findAll(pageable);
     }
 
+    @Override
+    public List<Area> findByQ(String q) {
+        // 模糊查询
+        q = "%" + q.toUpperCase() + "%";
+        return areaRepository.findQ(q);
+    }
+
 }
-  

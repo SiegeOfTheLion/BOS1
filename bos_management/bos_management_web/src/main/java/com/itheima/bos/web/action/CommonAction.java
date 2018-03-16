@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.ModelDriven;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
 
@@ -22,18 +23,20 @@ import net.sf.json.JsonConfig;
  * Date: 2018年3月15日 下午9:30:34 <br/>
  */
 public class CommonAction<T> extends ActionSupport implements ModelDriven<T> {
-
+    //定义model对象
     private T model;
     private Class<T> clazz;
-
+    //定义一个字节码文件对像
     public CommonAction(Class<T> clazz) {
         this.clazz = clazz;
     }
-
+    
     @Override
     public T getModel() {
         try {
-            model = clazz.newInstance();
+            if (model==null) {
+                model = clazz.newInstance();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -51,7 +54,14 @@ public class CommonAction<T> extends ActionSupport implements ModelDriven<T> {
     public void setRows(int rows) {
         this.rows = rows;
     }
-
+    /**
+     * 分页查询
+     * page2json:. <br/>  
+     *  
+     * @param page
+     * @param jsonConfig
+     * @throws IOException
+     */
     public void page2json(Page<T> page, JsonConfig jsonConfig)
             throws IOException {
         //当前页记录数
@@ -65,13 +75,38 @@ public class CommonAction<T> extends ActionSupport implements ModelDriven<T> {
         map.put("rows", list);
         map.put("total", total);
         String json;
-        //当不需要jsonconfig的时候就给它赋值为零
+        //当不需要jsonconfig的时候就给它赋值为null
         if (jsonConfig == null) {
             json = JSONObject.fromObject(map).toString();
         } else {
             json = JSONObject.fromObject(map, jsonConfig).toString();
         }
-
+        //获得response对象
+        HttpServletResponse response = ServletActionContext.getResponse();
+        //解决中文乱码
+        response.setContentType("application/json;charset=UTF-8");
+        //写出
+        response.getWriter().write(json);
+    }
+    
+    /**
+     * list集合
+     * list2json:. <br/>  
+     *  
+     * @param list
+     * @param jsonConfig
+     * @throws IOException
+     */
+    public void list2json(List<T> list,JsonConfig jsonConfig) throws IOException{
+        //将数据转换成Json字符串
+        String json;
+        if (jsonConfig!=null) {
+            
+            json = JSONArray.fromObject(list, jsonConfig).toString();
+        }else {
+            json = JSONArray.fromObject(list).toString();
+        }
+        //构建response对象
         HttpServletResponse response = ServletActionContext.getResponse();
         response.setContentType("application/json;charset=UTF-8");
         response.getWriter().write(json);
