@@ -97,7 +97,7 @@ public class CommonAction<T> extends ActionSupport implements ModelDriven<T> {
      * @param jsonConfig
      * @throws IOException
      */
-    public void list2json(List<T> list,JsonConfig jsonConfig) throws IOException{
+    public void list2json(List list,JsonConfig jsonConfig) throws IOException{
         //将数据转换成Json字符串
         String json;
         if (jsonConfig!=null) {

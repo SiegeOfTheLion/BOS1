@@ -2,19 +2,15 @@ package com.itheima.bos.web.action.base;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -30,8 +26,7 @@ import org.springframework.stereotype.Controller;
 import com.itheima.bos.domain.base.Courier;
 import com.itheima.bos.domain.base.Standard;
 import com.itheima.bos.service.base.CourierService;
-import com.opensymphony.xwork2.ActionSupport;
-import com.opensymphony.xwork2.ModelDriven;
+import com.itheima.bos.web.action.CommonAction;
 
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
@@ -45,38 +40,22 @@ import net.sf.json.JsonConfig;
 @ParentPackage("struts-default")
 @Scope("prototype")
 @Controller
-public class CourierAction extends ActionSupport
-        implements ModelDriven<Courier> {
+public class CourierAction extends CommonAction<Courier> {
+
+    public CourierAction() {
+
+        super(Courier.class);
+    }
 
     @Autowired
     private CourierService courierService;
-
-    private Courier model = new Courier();
-
-    @Override
-    public Courier getModel() {
-        return model;
-    }
 
     // 保存快递员数据
     @Action(value = "courierAction_save", results = {@Result(name = "success",
             location = "/pages/base/courier.html", type = "redirect")})
     public String save() {
-        courierService.save(model);
+        courierService.save(getModel());
         return SUCCESS;
-    }
-
-    // 当前页
-    // 每页总记录数
-    private int page;
-    private int rows;
-
-    public void setPage(int page) {
-        this.page = page;
-    }
-
-    public void setRows(int rows) {
-        this.rows = rows;
     }
 
     /**
@@ -101,11 +80,11 @@ public class CourierAction extends ActionSupport
                     CriteriaQuery<?> query, CriteriaBuilder cb) {
                 // 怎么获取表单中的属性
                 // model
-                String courierNum = model.getCourierNum();
-                String company = model.getCompany();
-                String type = model.getType();
+                String courierNum = getModel().getCourierNum();
+                String company = getModel().getCompany();
+                String type = getModel().getType();
                 // 怎么获取standard中的name属性
-                Standard standard = model.getStandard();
+                Standard standard = getModel().getStandard();
                 // 定义一个list集合
                 List<Predicate> list = new ArrayList<Predicate>();
                 // 判断当快递员的id不为空的时候,做查询
@@ -164,25 +143,10 @@ public class CourierAction extends ActionSupport
         Pageable pageable = new PageRequest(page - 1, rows);
         // 调用业务层处理请求
         Page<Courier> page = courierService.findAll(specification, pageable);
-        // 获取总数据条数
-        long total = page.getTotalElements();
-        // 获取每页的记录数
-        List<Courier> list = page.getContent();
-        // 把总记录数和每页记录数封装到Map集合中
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("total", total);
-        map.put("rows", list);
         // 使用jsonConfig可以灵活控制输出的内容
         JsonConfig jsonConfig = new JsonConfig();
         jsonConfig.setExcludes(new String[] {"fixedAreas", "takeTime"});
-        // 把map集合转换成json数组返回给页面
-        String json = JSONObject.fromObject(map, jsonConfig).toString();
-        // 获取response对象
-        HttpServletResponse response = ServletActionContext.getResponse();
-        // 解决中文乱码问题
-        response.setContentType("text/html;charset=UTF-8");
-        // 先给页面
-        response.getWriter().write(json);
+        page2json(page, jsonConfig);
         return NONE;
     }
 
@@ -214,5 +178,49 @@ public class CourierAction extends ActionSupport
         courierService.batchRes(ids);
         return SUCCESS;
     }
+
+    /**
+     * 查询正常在职的快递员
+     * 
+     * @throws IOException
+     */
+    @Action("courierAction_listajax")
+    public String listajax() throws IOException {
+        //System.out.println("执行了程序.........................");
+        List<Courier> list = courierService.findAvalible();
+        JsonConfig jsonConfig = new JsonConfig();
+        // 指定在生成json数据的时候要忽略的字段
+        jsonConfig.setExcludes(new String[] {"fixedAreas", "takeTime"});
+
+        list2json(list, jsonConfig);
+        return NONE;
+
+    }
+
+    /*@Action("courierAction_listajax")
+    public String listajax() throws IOException {
+        System.out.println("执行了程序.........................");
+        // 查询所有的在职的快递员
+
+        Specification<Courier> specification = new Specification<Courier>() {
+
+            @Override
+            public Predicate toPredicate(Root<Courier> root,
+                    CriteriaQuery<?> query, CriteriaBuilder cb) {
+                // 比较空值
+                Predicate predicate =
+                        cb.isNull(root.get("deltag").as(Character.class));
+
+                return predicate;
+            }
+        };
+        Page<Courier> p = courierService.findAll(specification, null);
+        List<Courier> list = p.getContent();
+        System.out.println("list="+list);
+        JsonConfig jsonConfig = new JsonConfig();
+        jsonConfig.setExcludes(new String[] {"fixedAreas", "takeTime"});
+        list2json(list, jsonConfig);
+        return NONE;
+    }*/
 
 }
