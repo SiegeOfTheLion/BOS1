@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -40,7 +41,8 @@ public interface CustomerService {
      */
     @GET
     @Path("/findCustomersAssociated2FixedArea")
-    public List<Customer> findCustomersAssociated2FixedArea(@QueryParam("fixedAreaId") String fixedAreaId);
+    public List<Customer> findCustomersAssociated2FixedArea(
+            @QueryParam("fixedAreaId") String fixedAreaId);
 
     /**
      * 把未关联的添加到定区
@@ -50,8 +52,12 @@ public interface CustomerService {
     void associatedCustomer2FixedArea(
             @QueryParam("fixedAreaId") String fixedAreaId,
             @QueryParam("customerIds") Long[] customerIds);
-    
-    
-    
+
+    /**
+     * 保存用户
+     */
+    @POST
+    @Path("/save")
+    void save(Customer customer);
 
 }

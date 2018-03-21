@@ -38,8 +38,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     /**
-     * 查询关联到指定定区的用户
-     * findCustomersAssociated2FixedArea
+     * 查询关联到指定定区的用户 findCustomersAssociated2FixedArea
      */
     @Override
     public List<Customer> findCustomersAssociated2FixedArea(
@@ -58,10 +57,19 @@ public class CustomerServiceImpl implements CustomerService {
         // 把要关联的数据和定区id进行绑定
         if (customerIds != null && fixedAreaId.length() > 0) {
             for (Long customerId : customerIds) {
-                customerRepository.bindCustomer2FixedArea(fixedAreaId, customerId);
+                customerRepository.bindCustomer2FixedArea(fixedAreaId,
+                        customerId);
             }
-            
+
         }
+    }
+
+    /**
+     * 保存注册的用户
+     */
+    @Override
+    public void save(Customer customer) {
+        customerRepository.save(customer);
     }
 
 }
