@@ -1,7 +1,10 @@
 package com.itheima.bos.fore.web.action;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.concurrent.TimeUnit;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -200,6 +203,29 @@ public class CustomerAction extends ActionSupport
         }
 
         return ERROR;
+    }
+
+   
+
+    @Action(value = "customerAction_lostBlurs")
+    public String lostBlurs() throws IOException {
+        
+        Customer customer = WebClient
+                .create("http://localhost:8180/crm/webService/customerService/lostBlurs")
+                .accept(MediaType.APPLICATION_JSON)
+                .type(MediaType.APPLICATION_JSON).query("telephone", model.getTelephone())
+                .get(Customer.class);
+        
+        
+        HttpServletResponse response = ServletActionContext.getResponse();
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter writer = response.getWriter();
+        
+        if (customer!=null) {
+            writer.write("该号码已存在!");
+        }
+        
+        return NONE;
     }
 
 }

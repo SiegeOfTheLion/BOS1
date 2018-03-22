@@ -19,6 +19,38 @@
 	    <![endif]-->
 <style>
 </style>
+<script type="text/javascript">
+	  function loseBlur() {
+		//alert("失去焦点")
+
+		$("#msg").html("");
+		var telephone = $("#telephone").val().trim();
+		$.post("customerAction_lostBlurs.action", 
+			{"telephone" : telephone}
+		, function(data) {
+			if (data != null) {
+				$("#msg").html(data);
+			}
+		});
+		
+	}  
+
+	 /* $(function() {
+		$("#telephone").blur(function() {
+			$("#msg").html("");
+			var telephone = $("#telephone").val().trim();
+			$.post("customerAction_lostBlurs.action", {
+				"telephone" : telephone
+			}, function(data) {
+				if (data!=null) {
+					$("#msg").html(data);
+				}else{
+					$("#msg").html("");
+				}
+			});
+		});
+	}); */ 
+</script>
 </head>
 <body>
 	<!--head-->
@@ -49,10 +81,11 @@
 									手机号：
 								</label>
 								<div class="controls">
-									<input type="text" id="telephone" value="" name="telephone"
-										class="fn-tinput" placeholder="手机号" required
+									<input onblur="loseBlur()" type="text" id="telephone" value=""
+										name="telephone" class="fn-tinput" placeholder="手机号" required
 										data-rule-mobile="true" data-msg-required="请输入手机号"
 										data-msg-mobile="请输入正确格式" />
+									<span id="msg" style="color: red;"></span>
 								</div>
 							</li>
 							<li class="bl-form-group">
@@ -82,16 +115,20 @@
 											//alert(reg.test(telephone))
 
 											if (reg.test(telephone)) {
-												
+
 												//发送短信
-												$.post("customerAction_sendSMS.action","telephone="+ telephone);
-												
+												$
+														.post(
+																"customerAction_sendSMS.action",
+																"telephone="
+																		+ telephone);
+
 												btn = thisBtn;
 												btn.disabled = true; //将按钮置为不可点击
 												btn.value = nums + '秒后重新获取';
 												clock = setInterval(doLoop,
 														1000); //一秒执行一次 
-											}else{
+											} else {
 												alert("请检查您输入的手机号")
 											}
 
@@ -202,4 +239,5 @@
 		</section>
 	</footer>
 </body>
+
 </html>

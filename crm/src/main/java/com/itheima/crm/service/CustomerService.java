@@ -82,4 +82,8 @@ public interface CustomerService {
     Customer login(@QueryParam("telephone") String telephone,
             @QueryParam("password") String password);
 
+    @GET
+    @Path("/lostBlurs")
+    Customer lostBlurs(@QueryParam("telephone") String telephone);
+
 }

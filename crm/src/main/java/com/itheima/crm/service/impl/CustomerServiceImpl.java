@@ -99,5 +99,16 @@ public class CustomerServiceImpl implements CustomerService {
     public Customer login(String telephone, String password) {
         return customerRepository.findByTelephoneAndPassword(telephone, password);
     }
+    /**
+     * 异步校验是否已经纯在手机号
+     * TODO 简单描述该方法的实现功能（可选）.  
+     * @return 
+     * @see com.itheima.crm.service.CustomerService#lostBlurs(java.lang.String)
+     */
+    @Override
+    public Customer lostBlurs(String telephone) {
+          
+        return customerRepository.findByTelephone(telephone);
+    }
     
 }
