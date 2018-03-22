@@ -127,10 +127,6 @@
 		}
 	}
 
-	
-	
-	
-	
 	//工具栏
 	var toolbar = [ {
 		id : 'button-add',
@@ -272,11 +268,10 @@
 	}
 </script>
 <script type="text/javascript">
+	//提交快递员的数据
 	function submitData() {
-		//提交快递员的数据
-		var result = $("#courierForm").form("validate")
-		if (result) {
-			$("#courierForm").submit();
+		if ($("#courierForm").form("validate")) {
+			$("#courierForm").submit()
 		}
 	}
 	//将表单中的数据序列化为json对象
@@ -299,13 +294,13 @@
 				});
 		return serializeObj;
 	};
-	
+
 	//执行查询
 	function doSearch() {
 		//把form表单中input节点的name的值和用户输入的内容,拼接成json字符串
 		var result = $("#searchForm").serializeJson();
 		//使用表单数据重新提交
-		$("#grid").datagrid("load",result)
+		$("#grid").datagrid("load", result)
 	}
 </script>
 </head>
@@ -436,8 +431,8 @@
 					</tr>
 					<tr>
 						<td colspan="2">
-							<a id="searchBtn" onclick="doSearch()" href="#" class="easyui-linkbutton"
-								data-options="iconCls:'icon-search'">查询</a>
+							<a id="searchBtn" onclick="doSearch()" href="#"
+								class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询</a>
 						</td>
 					</tr>
 				</table>

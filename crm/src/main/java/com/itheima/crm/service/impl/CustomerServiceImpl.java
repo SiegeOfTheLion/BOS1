@@ -71,5 +71,33 @@ public class CustomerServiceImpl implements CustomerService {
     public void save(Customer customer) {
         customerRepository.save(customer);
     }
-
+    
+    /**
+     * 激活
+     */
+    @Override
+    public void active(String telephone) {
+          
+        customerRepository.active(telephone);
+    }
+    /**
+     * 是否激活
+     * TODO 简单描述该方法的实现功能（可选）.  
+     * @see com.itheima.crm.service.CustomerService#isActive(java.lang.String)
+     */
+    @Override
+    public Customer isActive(String telephone) {
+          
+        return customerRepository.findByTelephone(telephone);
+    }
+    /**
+     * 登录
+     * TODO 简单描述该方法的实现功能（可选）.  
+     * @see com.itheima.crm.service.CustomerService#login(java.lang.String, java.lang.String)
+     */
+    @Override
+    public Customer login(String telephone, String password) {
+        return customerRepository.findByTelephoneAndPassword(telephone, password);
+    }
+    
 }

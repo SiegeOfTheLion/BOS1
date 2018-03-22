@@ -60,9 +60,41 @@ public class SubAreaAction extends CommonAction<SubArea> {
         Page<SubArea> page = subAreaService.findAll(pageable);
         //灵活控制输出
         JsonConfig jsonConfig = new JsonConfig();
-        jsonConfig.setExcludes(new String[] {"area","fixedArea"});
+        jsonConfig.setExcludes(new String[] {"subareas","couriers"});
         page2json(page, jsonConfig);
         return NONE;
     }
-
+    
+    
+    /**
+     * 查询未关联定区的分区
+     */
+    @Action(value = "subAreaAction_findUnAssociatedSubArea")
+    public String findUnAssociatedSubArea() throws IOException {
+        
+        List<SubArea> list = subAreaService.findUnAssociatedSubArea();
+        System.out.println("我这里面的值="+list);
+        JsonConfig jsonConfig = new JsonConfig();
+        jsonConfig.setExcludes(new String[] {"subareas"});
+        
+        list2json(list, jsonConfig);
+        
+        return NONE;
+    }
+    /**
+     * 查询已关联定区的分区
+     */
+    @Action(value = "subAreaAction_findAssociatedSubArea")
+    public String findAssociatedSubArea() throws IOException {
+        
+        List<SubArea> list = subAreaService.findAssociatedSubArea(getModel().getId());
+        System.out.println("list="+list);
+        JsonConfig jsonConfig = new JsonConfig();
+        jsonConfig.setExcludes(new String[] {"subareas","couriers"});
+        list2json(list, jsonConfig);
+        return NONE;
+    }
+    
+    
+    
 }

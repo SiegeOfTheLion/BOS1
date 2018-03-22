@@ -38,11 +38,49 @@
 	function doSearch() {
 		$('#searchWindow').window("open");
 	}
-
+	//定区关联分区
 	function doAssociations() {
-		$('#searchWindow').window("open");
+		//什么时候打开定区关联窗口-->当在复选框中选中一条数据时,就可以打开
+		//否则就给提示不能打开
+		var rows = $("#grid").datagrid("getSelections")
+		if (rows.length == 1) {
+			$('#subAreaWindow').window('open');
+			//清空数据
+			$("#noassociationSubAreaSelect").empty();
+			$("#associationSubAreaSelect").empty();
+			//打开窗口之后需要在复选框里面显示数据
+			//发起请求查询未关联数据
+			$.post("../../subAreaAction_findUnAssociatedSubArea.action",
+					function(data) {
+						//对数据做遍历
+						for (var i = 0; i < data.length; i++) {
+							var id = data[i].id;
+							var keyWords = data[i].keyWords;
+							//<option>李红(15059715218)</option>
+							$("#noassociationSubAreaSelect").append(
+									"<option value='"+id+"'>" + keyWords
+											+ "</option>")
+						}
+					});
+
+			//发起请求查询已关联数据
+			//需要携带定区id
+			var id = rows[0].id;
+			$.post("../../subAreaAction_findAssociatedSubArea.action", "id="
+					+ id, function(data) {
+				for (var i = 0; i < data.length; i++) {
+					var id = data[i].id;
+					var keyWords = data[i].keyWords;
+					$("#associationSubAreaSelect").append(
+							"<option value='"+id+"'>" + keyWords + "</option>")
+				}
+			})
+		} else {
+			$.messager.alert("提示", "你最多也只能选择一条数据!!!", "warning")
+		}
 	}
 
+	//定区关联客户
 	function doAssociationsCustomer() {
 		//什么时候打开定区关联窗口-->当在复选框中选中一条数据时,就可以打开
 		//否则就给提示不能打开
@@ -348,6 +386,34 @@
 	}
 </script>
 
+<!-- 关联分区 -->
+<script type="text/javascript">
+	//到右边subAreamove2right
+	function subAreamove2right() {
+		$("#associationSubAreaSelect").append(
+				$("#noassociationSubAreaSelect option:selected"))
+	}
+	//到左边
+	function subAreamove2left() {
+		$("#noassociationSubAreaSelect").append(
+				$("#associationSubAreaSelect option:selected"))
+	}
+	
+	//关联分区
+	function associatedSubArea2FixedArea() {
+		//关联客户时需要的参数有三个一个是定区ID:fixedAreaId
+		//给定区id赋值
+		var rows = $("#grid").datagrid("getSelections");
+		var row = rows[0].id;
+		$("#subAreaFixedAreaId").val(row);
+		//选中右侧下拉框所有的option
+		$("#associationSubAreaSelect option").attr("selected", "selected")
+
+		$("#subAreaForm").submit();
+
+	}
+</script>
+
 </head>
 
 <body class="easyui-layout" style="visibility: hidden;">
@@ -506,6 +572,55 @@
 							<a id="associationBtn" onclick="associatedCustomer2FixedArea()"
 								href="#" class="easyui-linkbutton"
 								data-options="iconCls:'icon-save'">关联客户</a>
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>
+
+
+
+
+	<!-- 关联分区窗口 -->
+	<div modal="true" class="easyui-window" title="关联分区窗口"
+		id="subAreaWindow" collapsible="false" closed="true"
+		minimizable="false" maximizable="false"
+		style="top: 20px; left: 200px; width: 400px; height: 300px;">
+		<div style="overflow: auto; padding: 5px;" border="false">
+			<form id="subAreaForm"
+				action="../../fixedAreaAction_assignSubArea2FixedArea.action"
+				method="post">
+				<table class="table-edit" width="80%" align="center">
+					<tr class="title">
+						<td colspan="3">关联分区</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="hidden" name="id" id="subAreaFixedAreaId" />
+							<select id="noassociationSubAreaSelect" multiple="multiple"
+								size="10">
+
+							</select>
+						</td>
+						<td>
+							<input type="button" onclick="subAreamove2right()" value="》》"
+								id="toRight">
+							<br />
+							<input type="button" onclick="subAreamove2left()" value="《《"
+								id="toLeft">
+						</td>
+						<td>
+							<select id="associationSubAreaSelect" name="subAreaIds"
+								multiple="multiple" size="10"></select>
+						</td>
+					</tr>
+					<tr>
+						<!-- Associated with the customer -->
+						<td colspan="3">
+							<a id="associationBtn" onclick="associatedSubArea2FixedArea()"
+								href="#" class="easyui-linkbutton"
+								data-options="iconCls:'icon-save'">关联定区</a>
 						</td>
 					</tr>
 				</table>

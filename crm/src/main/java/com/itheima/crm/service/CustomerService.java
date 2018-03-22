@@ -60,4 +60,26 @@ public interface CustomerService {
     @Path("/save")
     void save(Customer customer);
 
+    /**
+     * 用户激活也就是做登录跳转
+     */
+    @PUT
+    @Path("/active")
+    void active(@QueryParam("telephone") String telephone);
+
+    /**
+     * 校验用户是否已经激活
+     */
+    @GET
+    @Path("/isActive")
+    Customer isActive(@QueryParam("telephone") String telephone);
+
+    /**
+     * 登入
+     */
+    @GET
+    @Path("/login")
+    Customer login(@QueryParam("telephone") String telephone,
+            @QueryParam("password") String password);
+
 }

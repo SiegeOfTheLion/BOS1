@@ -50,11 +50,14 @@ public class CourierAction extends CommonAction<Courier> {
     @Autowired
     private CourierService courierService;
 
-    // 保存快递员数据
+    // 保存快递员数据courierAction_save
     @Action(value = "courierAction_save", results = {@Result(name = "success",
             location = "/pages/base/courier.html", type = "redirect")})
     public String save() {
+        System.out.println("执行了save方法...............................");
         courierService.save(getModel());
+        System.out.println(111);
+        
         return SUCCESS;
     }
 

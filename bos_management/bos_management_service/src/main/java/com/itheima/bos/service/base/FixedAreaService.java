@@ -13,10 +13,10 @@ import com.itheima.bos.domain.base.FixedArea;
 public interface FixedAreaService {
     void save(FixedArea fixedArea);
     
-    
-
     Page<FixedArea> findAll(Pageable pageable);
 
     void associationCourierToFixedArea(Long fixedAreaId, Long courierId,
             Long takeTimeId);
+
+    void assignSubArea2FixedArea(Long fixedAreaId, Long[] subAreaIds);
 }

@@ -1,6 +1,6 @@
 package com.itheima.bos.fore.web.action;
 
-import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.MediaType;
 
@@ -12,11 +12,12 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Controller;
+import org.springframework.data.redis.core.RedisTemplate;
 
-import com.aliyuncs.exceptions.ClientException;
 import com.itheima.crm.domain.Customer;
+import com.itheima.utils.MailUtils;
 import com.itheima.utils.SmsUtils;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.ModelDriven;
@@ -29,11 +30,13 @@ import com.opensymphony.xwork2.ModelDriven;
 @Namespace("/")
 @ParentPackage("struts-default")
 @Scope("prototype")
-@Controller
+// @Controller
 public class CustomerAction extends ActionSupport
         implements ModelDriven<Customer> {
 
     private Customer model = new Customer();
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
 
     @Override
     public Customer getModel() {
@@ -92,10 +95,111 @@ public class CustomerAction extends ActionSupport
                     .create("http://localhost:8180/crm/webService/customerService/save")
                     .accept(MediaType.APPLICATION_JSON)
                     .type(MediaType.APPLICATION_JSON).post(model);
+
+            // 生成验证码
+            String activeCode = RandomStringUtils.randomNumeric(32);
+            // 存储验证码
+            redisTemplate.opsForValue().set(model.getTelephone(), activeCode, 1,
+                    TimeUnit.DAYS);
+
+            String emailBody =
+                    "感谢你注册本网站的账号,请您在24小时内点击<a href='http://localhost:8280/portal/customerAction_active.action?activeCode="
+                            + activeCode + "&telephone=" + model.getTelephone()
+                            + "'>本链接</a>,以便激活您的账号,谢谢";
+            MailUtils.sendMail(model.getEmail(), "激活账号", emailBody);
             return SUCCESS;
         }
         return ERROR;
 
+    }
+
+    /**
+     * 激活的实现
+     */
+    // 使用属性驱动
+    private String activeCode;
+
+    public void setActiveCode(String activeCode) {
+        this.activeCode = activeCode;
+    }
+
+    @Action(value = "customerAction_active",
+            results = {
+                    @Result(name = "success", location = "/login.html",
+                            type = "redirect"),
+                    @Result(name = "error", location = "/signup-fail.html",
+                            type = "redirect")})
+    public String active() {
+        String serverCode =
+                redisTemplate.opsForValue().get(model.getTelephone());
+        // 判断两个激活码是否相同(也就是判断用户是否已经激活)
+        if (StringUtils.isNotEmpty(serverCode)
+                && StringUtils.isNotEmpty(activeCode)
+                && serverCode.equals(activeCode)) {
+            // 激活后
+            WebClient
+                    .create("http://localhost:8180/crm/webService/customerService/active")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .type(MediaType.APPLICATION_JSON)
+                    .query("telephone", model.getTelephone()).put(null);
+            return SUCCESS;
+        }
+        return ERROR;
+    }
+
+    // 属性驱动
+
+    @Action(value = "customerAction_login",
+            results = {
+                    @Result(name = "success", location = "/index.html",
+                            type = "redirect"),
+                    @Result(name = "error", location = "/login.html",
+                            type = "redirect"),
+                    @Result(name = "unactived", location = "/login.html",
+                            type = "redirect")})
+
+    public String login() {
+
+        // 登入
+        String serverCode = (String) ServletActionContext.getRequest()
+                .getSession().getAttribute("validateCode");
+        // 校验 两个验证码相同
+        if (StringUtils.isNotEmpty(serverCode)
+                && StringUtils.isNotEmpty(checkcode)
+                && serverCode.equals(checkcode)) {
+            // 校验用户是否已经激活
+            Customer customer = WebClient
+                    .create("http://localhost:8180/crm/webService/customerService/isActive")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .type(MediaType.APPLICATION_JSON)
+                    .query("telephone", model.getTelephone())
+                    .get(Customer.class);
+            if (customer != null && customer.getType() != null) {
+                if (customer.getType() == 1) {
+                    // 登入
+                    Customer c = WebClient
+                            .create("http://localhost:8180/crm/webService/customerService/login")
+                            .accept(MediaType.APPLICATION_JSON)
+                            .type(MediaType.APPLICATION_JSON)
+                            .query("telephone", model.getTelephone())
+                            .query("password", model.getPassword())
+                            .get(Customer.class);
+                    // 判断用户登入用户是否为空
+                    if (c != null) {
+                        ServletActionContext.getRequest().getSession()
+                                .setAttribute("user", c);
+                        return SUCCESS;
+                    } else {
+                        return ERROR;
+                    }
+                } else {
+                    // 用户已经注册成功但是没有激活,那么就发送一条短信叫他激活
+                    return "unactived";
+                }
+            }
+        }
+
+        return ERROR;
     }
 
 }

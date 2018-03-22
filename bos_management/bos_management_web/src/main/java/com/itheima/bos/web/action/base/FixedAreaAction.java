@@ -157,5 +157,25 @@ public class FixedAreaAction extends CommonAction<FixedArea> {
                 courierId, takeTimeId);
         return SUCCESS;
     }
+    
+    
+    /**
+     * 关联定区
+     */
+    //使用属性驱动关联分区
+    private Long[] subAreaIds;
+    public void setSubAreaIds(Long[] subAreaIds) {
+        this.subAreaIds = subAreaIds;
+    }
+
+    @Action(value = "fixedAreaAction_assignSubArea2FixedArea",
+            results = {@Result(name = "success",
+                    location = "/pages/base/sub_area.html",
+                    type = "redirect")})
+    public String assignSubArea2FixedArea() {
+        //System.out.println("程序执行了.......................");
+        fixedAreaService.assignSubArea2FixedArea(getModel().getId(),subAreaIds);
+        return SUCCESS;
+    }
 
 }

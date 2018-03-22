@@ -1,5 +1,7 @@
 package com.itheima.bos.service.base.impl;
 
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,9 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.itheima.bos.dao.base.CourierRepository;
 import com.itheima.bos.dao.base.FixedAreaRepository;
+import com.itheima.bos.dao.base.SubAreaRepository;
 import com.itheima.bos.dao.base.TakeTimeRepository;
 import com.itheima.bos.domain.base.Courier;
 import com.itheima.bos.domain.base.FixedArea;
+import com.itheima.bos.domain.base.SubArea;
 import com.itheima.bos.domain.base.TakeTime;
 import com.itheima.bos.service.base.FixedAreaService;
 
@@ -29,7 +33,8 @@ public class FixedAreaServiceImpl implements FixedAreaService {
     private CourierRepository courierRepository;
     @Autowired
     private TakeTimeRepository takeTimeRepository;
-
+    @Autowired
+    private SubAreaRepository subAreaRepository;
     @Override
     public void save(FixedArea fixedArea) {
 
@@ -60,6 +65,24 @@ public class FixedAreaServiceImpl implements FixedAreaService {
         // courier.getFixedAreas().add(fixedArea);
         fixedArea.getCouriers().add(courier);
 
+    }
+
+    @Override
+    public void assignSubArea2FixedArea(Long fixedAreaId, Long[] subAreaIds) {
+          
+        // 解绑
+        FixedArea fixedArea = fixedAreaRepository.findOne(fixedAreaId);
+        Set<SubArea> subareas = fixedArea.getSubareas();
+        for (SubArea subArea : subareas) {
+            subArea.setFixedArea(null);
+        }
+        
+        // 绑定
+        for (Long subAreaId : subAreaIds) {
+            SubArea subArea = subAreaRepository.findOne(subAreaId);
+            subArea.setFixedArea(fixedArea);
+        }
+        
     }
 
 }
