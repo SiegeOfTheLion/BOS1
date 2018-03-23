@@ -86,4 +86,10 @@ public interface CustomerService {
     @Path("/lostBlurs")
     Customer lostBlurs(@QueryParam("telephone") String telephone);
 
+    /**
+     * 查询定区ID
+     */
+    @GET
+    @Path("/findFixedAreaIdByAddress")
+    String findFixedAreaIdByAddress(@QueryParam("address") String address);
 }

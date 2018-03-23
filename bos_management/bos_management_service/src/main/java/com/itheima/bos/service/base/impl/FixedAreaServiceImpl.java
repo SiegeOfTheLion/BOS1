@@ -83,6 +83,8 @@ public class FixedAreaServiceImpl implements FixedAreaService {
             subArea.setFixedArea(fixedArea);
         }
         
+        
+        
     }
 
 }

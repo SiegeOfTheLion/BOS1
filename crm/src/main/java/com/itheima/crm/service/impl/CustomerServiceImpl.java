@@ -110,5 +110,13 @@ public class CustomerServiceImpl implements CustomerService {
           
         return customerRepository.findByTelephone(telephone);
     }
+
+    @Override
+    public String findFixedAreaIdByAddress(String address) {
+        return customerRepository.findFixedAreaIdByAddress(address);
+    }
+    
+    
+    
     
 }

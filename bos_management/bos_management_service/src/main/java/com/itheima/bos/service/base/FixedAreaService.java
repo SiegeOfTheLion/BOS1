@@ -1,5 +1,8 @@
 package com.itheima.bos.service.base;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,4 +22,6 @@ public interface FixedAreaService {
             Long takeTimeId);
 
     void assignSubArea2FixedArea(Long fixedAreaId, Long[] subAreaIds);
+    
+    
 }
