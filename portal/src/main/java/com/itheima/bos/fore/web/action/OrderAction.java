@@ -32,6 +32,7 @@ public class OrderAction extends ActionSupport implements ModelDriven<Order> {
 
     private Order model = new Order();
 
+    
     @Override
     public Order getModel() {
 

@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.concurrent.TimeUnit;
 
+import javax.jms.JMSException;
+import javax.jms.MapMessage;
+import javax.jms.Message;
+import javax.jms.Session;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 
@@ -18,6 +22,8 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 
 import com.itheima.crm.domain.Customer;
 import com.itheima.utils.MailUtils;
@@ -36,7 +42,10 @@ import com.opensymphony.xwork2.ModelDriven;
 // @Controller
 public class CustomerAction extends ActionSupport
         implements ModelDriven<Customer> {
-
+    
+    @Autowired
+    private JmsTemplate jmsTemplate;
+    
     private Customer model = new Customer();
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
@@ -46,24 +55,29 @@ public class CustomerAction extends ActionSupport
 
         return model;
     }
-
+    //使用MQ:消息队列来发送验证码
     @Action("customerAction_sendSMS")
     public String sendSMS() {
-
-        try {
+       
             // 随机验证码
-            String code = RandomStringUtils.randomNumeric(6);
+            final String code = RandomStringUtils.randomNumeric(6);
             System.out.println("code=" + code);
 
             // 把验证码保存到域对象中,用于和页面传递过来的做校验
             ServletActionContext.getRequest().getSession().setAttribute("code",
                     code);
-
-            SmsUtils.sendSms(model.getTelephone(), code);
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
+            
+            //使用jmsTemplate来发送验证码
+            jmsTemplate.send("sms", new MessageCreator() {
+                
+                @Override
+                public Message createMessage(Session session) throws JMSException {
+                    MapMessage message = session.createMapMessage();
+                    message.setString("telephone", model.getTelephone());
+                    message.setString("code", code);
+                    return message;
+                }
+            });
 
         return NONE;
     }
