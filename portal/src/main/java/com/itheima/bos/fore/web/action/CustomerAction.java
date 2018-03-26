@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.stereotype.Controller;
 
 import com.itheima.crm.domain.Customer;
 import com.itheima.utils.MailUtils;
@@ -39,7 +40,7 @@ import com.opensymphony.xwork2.ModelDriven;
 @Namespace("/")
 @ParentPackage("struts-default")
 @Scope("prototype")
-// @Controller
+@Controller
 public class CustomerAction extends ActionSupport
         implements ModelDriven<Customer> {
     

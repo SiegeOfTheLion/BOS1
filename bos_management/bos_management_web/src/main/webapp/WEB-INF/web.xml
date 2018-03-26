@@ -31,6 +31,24 @@
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
+	
+	
+	<!--
+		Spring提供的,用于整合shiro框架的
+		一定要写在Struts框架的前端控制器之前
+		本filter创建的时候,需要注入一个对象,这个对象必须声明在applicationContext.xml中,
+		而且这个对象的id必须和本filter的name保持一致
+	-->
+	<filter>
+		<filter-name>shiroFilterFactoryBean</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+	
+	<filter-mapping>
+		<filter-name>shiroFilterFactoryBean</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
 	<!-- 配置Struts的前端控制器 -->
 	<filter>
 		<filter-name>struts</filter-name>

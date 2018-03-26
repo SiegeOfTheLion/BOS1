@@ -69,8 +69,8 @@
 	</bean>
 
 	<!-- 上面的写法和下面的写法作用是一样的 -->
-	<amq:connectionFactory userName="admin" password="admin"
-		id="amqConnectionFactory" brokerURL="tcp://localhost:61616"></amq:connectionFactory>
+	<!-- <amq:connectionFactory userName="admin" password="admin"
+		id="amqConnectionFactory" brokerURL="tcp://localhost:61616"></amq:connectionFactory> -->
 
 	<!--
 		################################# 指定Spring Caching连接工厂 #################################
