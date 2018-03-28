@@ -67,8 +67,27 @@
 	-->
 	<context:component-scan base-package="com.itheima.bos.service,com.itheima.bos.web" />
 
-	<!-- 开启事务注解 -->
-	<tx:annotation-driven transaction-manager="transactionManager" />
+	<!-- 
+		开启事务注解
+		JDK代理方式: 根据目标对象所实现的接口,创建一个代理对象
+		CGlib代理方式: 创建一个目标对象的子类,不是特别要求这个对象要实现某个接口
+		proxy-target-class="true" :CGlib代理
+		proxy-target-class="false" :JDK代理
+	 -->
+	<tx:annotation-driven proxy-target-class="true" transaction-manager="transactionManager" />
+	<!-- 基于Spring自动代理的方式,为Service层的对象创建代理对象 -->
+	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator">
+		<!-- 开启cglib代理 -->
+		<property name="proxyTargetClass" value="true"></property>
+	</bean>
+	<!-- 
+		面向切面 = 起点(在哪里插入代码) + 通知(要插入的代码)
+		shiro:框架
+	 -->
+	<bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+		<!-- 注入安全管理器 -->
+		<property name="securityManager" ref="securityManager"></property>
+	</bean>
 	<!--
 		#########################################################
 		指定Spring Data JPA要进行扫描的包,该包中的类框架会自动为其创建代理
@@ -140,7 +159,6 @@
 		<!-- 注入realm -->
 		<property name="realm" ref="userRealm"></property>
 	</bean>
-	
 	
 	
 	
