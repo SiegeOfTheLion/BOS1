@@ -106,4 +106,12 @@ public class Menu {
         this.parentMenu = parentMenu;
     }
 
+ /*   @Override
+    public String toString() {
+        return "Menu [id=" + id + ", name=" + name + ", page=" + page
+                + ", priority=" + priority + ", description=" + description
+                + ", roles=" + roles + ", childrenMenus=" + childrenMenus
+                + ", parentMenu=" + parentMenu + "]";
+    }*/
+    
 }

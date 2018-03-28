@@ -67,20 +67,35 @@ public class UserAction extends CommonAction<User> {
                 // 该方法的返回值是由Realm中创建SimpleAuthenticationInfo对象时,传入的第一个参数决定的
                 User user = (User) subject.getPrincipal();
                 // 把用户存到session中间
-                ServletActionContext.getRequest().getSession().setAttribute("user",
-                        user);
+                ServletActionContext.getRequest().getSession()
+                        .setAttribute("user", user);
                 return SUCCESS;
             } catch (UnknownAccountException e) {
-                e.printStackTrace();  
+                e.printStackTrace();
                 System.out.println("用户名错误!");
-            }catch (IncorrectCredentialsException e) {
-                e.printStackTrace();  
+            } catch (IncorrectCredentialsException e) {
+                e.printStackTrace();
                 System.out.println("密码错误!");
-            }catch (Exception e) {
-                e.printStackTrace();  
+            } catch (Exception e) {
+                e.printStackTrace();
                 System.out.println("其他错误!");
             }
         }
+        return LOGIN;
+    }
+    /**
+     * 退出当前系统
+     * logout:. <br/>  
+     *  
+     * @return
+     */
+    @Action(value = "userAction_logout", results = {@Result(name = "login",
+            location = "/login.html", type = "redirect")})
+    public String logout() {
+        // 获取当前用户
+        Subject subject = SecurityUtils.getSubject();
+        // 当前用户退出系统
+        subject.logout();
         return LOGIN;
     }
 
