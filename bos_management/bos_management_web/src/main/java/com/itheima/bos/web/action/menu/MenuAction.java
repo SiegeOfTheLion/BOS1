@@ -49,7 +49,7 @@ public class MenuAction extends CommonAction<Menu> {
         List<Menu> list = menuService.findAll();
 
         JsonConfig jsonConfig = new JsonConfig();
-        jsonConfig.setExcludes(new String[] {"roles", "childrenMenus"});
+        jsonConfig.setExcludes(new String[] {"roles", "childrenMenus","parentMenu"});
 
         list2json(list, jsonConfig);
         return NONE;
@@ -75,15 +75,13 @@ public class MenuAction extends CommonAction<Menu> {
     
     @Action("menuAction_pageQuery")
     public String pageQuery() throws IOException{
-        String page2 = getModel().getPage();
-        page = Integer.parseInt(page2);
         // 获取pageable对象
-        Pageable pageable = new PageRequest(page-1, rows);
+        Pageable pageable = new PageRequest(Integer.parseInt(getModel().getPage()) - 1, rows);
         // 使用业务层调用findAll方法
-        Page<Menu> page = (Page<Menu>) menuService.findAll(pageable);
+        Page<Menu> page = menuService.findAll(pageable);
         //
         JsonConfig jsonConfig = new JsonConfig();
-        jsonConfig.setExcludes(new String[] {"roles", "childrenMenus"});
+        jsonConfig.setExcludes(new String[] {"roles", "childrenMenus","parentMenu"});
         page2json(page, jsonConfig);
         return NONE;
     }

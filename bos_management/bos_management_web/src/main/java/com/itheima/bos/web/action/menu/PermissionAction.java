@@ -1,6 +1,7 @@
 package com.itheima.bos.web.action.menu;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -34,7 +35,7 @@ public class PermissionAction extends CommonAction<Permission> {
     public PermissionAction() {
         super(Permission.class);
     }
-    
+
     @Autowired
     private PermissionService permissionService;
 
@@ -43,20 +44,33 @@ public class PermissionAction extends CommonAction<Permission> {
         // 获取pageable对象
         Pageable pageable = new PageRequest(page - 1, rows);
         // 使用业务层调用findAll方法
-        Page<Permission> page = (Page<Permission>) permissionService.findAll(pageable);
+        Page<Permission> page =
+                (Page<Permission>) permissionService.findAll(pageable);
         // 灵活控制输出
         JsonConfig jsonConfig = new JsonConfig();
         jsonConfig.setExcludes(new String[] {"roles"});
         page2json(page, jsonConfig);
         return NONE;
     }
-    
-    
-    @Action(value = "permissionAction_save", results = @Result(name = "success",
-            location = "/pages/system/permission.html", type = "redirect"))
-    public String save(){
+
+    @Action(value = "permissionAction_save",
+            results = @Result(name = "success",
+                    location = "/pages/system/permission.html",
+                    type = "redirect"))
+    public String save() {
         permissionService.save(getModel());
         return SUCCESS;
+    }
+
+    @Action("permissionAction_findAll")
+    public String findAll() throws IOException {
+        Page<Permission> page = permissionService.findAll(null);
+        // 灵活控制输出
+        JsonConfig jsonConfig = new JsonConfig();
+        jsonConfig.setExcludes(new String[] {"roles"});
+        List<Permission> list = page.getContent();
+        list2json(list, jsonConfig);
+        return NONE;
     }
 
 }
