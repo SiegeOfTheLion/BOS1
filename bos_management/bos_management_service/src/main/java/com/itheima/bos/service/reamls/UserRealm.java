@@ -1,5 +1,8 @@
 package com.itheima.bos.service.reamls;
 
+import java.util.List;
+
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -9,10 +12,15 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.itheima.bos.dao.system.UserRepository;
+import com.itheima.bos.dao.system.MenuDAO.PermissionRepository;
+import com.itheima.bos.dao.system.MenuDAO.RoleRepository;
+import com.itheima.bos.domain.system.Permission;
+import com.itheima.bos.domain.system.Role;
 import com.itheima.bos.domain.system.User;
 
 /**
@@ -25,16 +33,51 @@ public class UserRealm extends AuthorizingRealm {
     // AuthorizingRealm:授权领域
     @Autowired
     private UserRepository userRepository;
-
+    @Autowired
+    private PermissionRepository permissionRepository;
+    @Autowired
+    private RoleRepository roleRepository;
     // 授权的方法
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(
             PrincipalCollection arg0) {
         // SimpleAuthorizationInfo:简单的授权信息
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
-        // 给admain授权具备修改查看courierAction_pageQuery方法
-        info.addStringPermission("courierAction_pageQuery");
-        info.addRole("admain");
+        // 根据当前用户查询权限和角色
+        // 怎么获取当前用户呢?shiro框架提供了SecurityUtils.getSubject()方法用于获取subject即是当前对象
+        Subject subject = SecurityUtils.getSubject();
+        // 当前对象
+        User user = (User) subject.getPrincipal();
+        // 如果当前用户名是超级管理员的话,授予所有权限和角色
+        if ("admain".equals(user.getUsername())) {
+            // 去数据库查询所有角色和权限
+            // 获取权限
+            List<Permission> permissions = permissionRepository.findAll();
+            for (Permission permission : permissions) {
+                // 把权限添加到超级管理员身上
+                info.addStringPermission(permission.getKeyword());
+            }
+            // 获取角色
+            List<Role> roles = roleRepository.findAll();
+            for (Role role : roles) {
+                // 把权限添加到超级管理员身上
+                info.addStringPermission(role.getKeyword());
+            }
+        }else {
+            // 普通用户(这个uid不是permission的id,也不是role的id,而是用户名的id)
+            // 获取权限
+            List<Permission> permissions = permissionRepository.findbyUid(user.getId());
+            for (Permission permission : permissions) {
+                // 把权限添加到超级管理员身上
+                info.addStringPermission(permission.getKeyword());
+            }
+            // 获取角色
+            List<Role> roles = roleRepository.findbyUid(user.getId());
+            for (Role role : roles) {
+                // 把权限添加到超级管理员身上
+                info.addStringPermission(role.getKeyword());
+            }
+        }
         return info;
     }
 

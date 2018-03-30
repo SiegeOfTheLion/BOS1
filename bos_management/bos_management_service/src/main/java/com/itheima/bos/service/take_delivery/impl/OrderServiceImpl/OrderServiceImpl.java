@@ -104,6 +104,7 @@ public class OrderServiceImpl implements OrderService {
                         WorkBill workBill = new WorkBill();
                         workBill.setOrder(order);
                         workBill.setPickstate("新单");
+                        workBill.setBuildtime(new Date());
                         workBill.setAttachbilltimes(0);
                         workBill.setRemark(order.getRemark());
                         workBill.setCourier(courier);
@@ -145,8 +146,10 @@ public class OrderServiceImpl implements OrderService {
                                     order.setCourier(courier);
                                     // 创建工单把
                                     WorkBill workBill = new WorkBill();
+                                    
                                     workBill.setOrder(order);
                                     workBill.setPickstate("新单");
+                                    workBill.setBuildtime(new Date());
                                     workBill.setAttachbilltimes(0);
                                     workBill.setRemark(order.getRemark());
                                     workBill.setCourier(courier);

@@ -37,7 +37,7 @@ public class WaybillAction extends CommonAction<WayBill> {
     @Action("waybillAction_save")
     public String save() throws IOException {
         String msg = "0";
-        System.out.println("执行了save方法..............");
+        
         waybillService.save(getModel());
 
         HttpServletResponse response = ServletActionContext.getResponse();

@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.itheima.bos.dao.system.MenuDAO.MenuRepository;
 import com.itheima.bos.domain.system.Menu;
+import com.itheima.bos.domain.system.User;
 import com.itheima.bos.service.system.MenuService.MenuService;
 
 /**  
@@ -39,6 +40,19 @@ public class MenuServiceImpl implements MenuService {
     public Page<Menu> findAll(Pageable pageable) {
           
         return menuRepository.findAll(pageable);
+    }
+    /**
+     * 动态加载菜单栏
+     * TODO 简单描述该方法的实现功能（可选）.  
+     * @see com.itheima.bos.service.system.MenuService.MenuService#findbyUser(com.itheima.bos.domain.system.User)
+     */
+    @Override
+    public List<Menu> findbyUser(User user) {
+          
+        if ("admain".equals(user.getUsername())) {
+            return menuRepository.findAll();
+        }
+        return menuRepository.findbyUser(user.getId());
     }
     
 }

@@ -3,6 +3,8 @@ package com.itheima.bos.web.action.menu;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 
 import com.itheima.bos.domain.system.Menu;
+import com.itheima.bos.domain.system.User;
 import com.itheima.bos.service.system.MenuService.MenuService;
 import com.itheima.bos.web.action.CommonAction;
 
@@ -49,15 +52,16 @@ public class MenuAction extends CommonAction<Menu> {
         List<Menu> list = menuService.findAll();
 
         JsonConfig jsonConfig = new JsonConfig();
-        jsonConfig.setExcludes(new String[] {"roles", "childrenMenus","parentMenu"});
+        jsonConfig.setExcludes(
+                new String[] {"roles", "childrenMenus", "parentMenu"});
 
         list2json(list, jsonConfig);
         return NONE;
     }
+
     /**
-     * 保存菜单数据
-     * save:. <br/>  
-     *  
+     * 保存菜单数据 save:. <br/>
+     * 
      * @return
      * @throws IOException
      */
@@ -67,22 +71,40 @@ public class MenuAction extends CommonAction<Menu> {
         menuService.save(getModel());
         return SUCCESS;
     }
-    
+
     /**
      * 分页查询
-     * @throws IOException 
+     * 
+     * @throws IOException
      */
-    
+
     @Action("menuAction_pageQuery")
-    public String pageQuery() throws IOException{
+    public String pageQuery() throws IOException {
         // 获取pageable对象
-        Pageable pageable = new PageRequest(Integer.parseInt(getModel().getPage()) - 1, rows);
+        Pageable pageable = new PageRequest(
+                Integer.parseInt(getModel().getPage()) - 1, rows);
         // 使用业务层调用findAll方法
         Page<Menu> page = menuService.findAll(pageable);
         //
         JsonConfig jsonConfig = new JsonConfig();
-        jsonConfig.setExcludes(new String[] {"roles", "childrenMenus","parentMenu"});
+        jsonConfig.setExcludes(
+                new String[] {"roles", "childrenMenus", "parentMenu"});
         page2json(page, jsonConfig);
+        return NONE;
+    }
+
+    @Action(value = "menuAction_findbyUser")
+    public String findbyUser() throws IOException {
+        // 获取当前用户
+        Subject subject = SecurityUtils.getSubject();
+        User user = (User) subject.getPrincipal();
+
+        List<Menu> list = menuService.findbyUser(user);
+        JsonConfig jsonConfig = new JsonConfig();
+        jsonConfig.setExcludes(new String[] {"roles", "childrenMenus",
+                "parentMenu", "children"});
+
+        list2json(list, jsonConfig);
         return NONE;
     }
 
