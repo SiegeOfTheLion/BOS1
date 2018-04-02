@@ -144,15 +144,15 @@
 			-->
 			<value>
 
-				/css/* = anon
-				/data/* = anon
-				/images/* = anon
-				/js/** = anon
-				/validatecode.jsp = anon
-				/userAction_login.action = anon
-				/courierAction_pageQuery.action = perms["courierAction_pageQuery"]
-				/hi.html = perms["courierAction_pageQuery"]
-				/** = authc
+				<!-- /css/* = anon
+					/data/* = anon
+					/images/* = anon
+					/js/** = anon
+					/validatecode.jsp = anon
+					/userAction_login.action = anon
+					/courierAction_pageQuery.action = perms["courierAction_pageQuery"]
+					/hi.html = perms["courierAction_pageQuery"]
+					/** = authc -->
 			</value>
 		</property>
 	</bean>
@@ -169,9 +169,9 @@
 		<!-- 注入ehcache配置文件 -->
 		<property name="cacheManagerConfigFile" value="classpath:ehcache.xml"></property>
 	</bean>
-	
-	
-	
+
+
+
 	<!-- 注册任务详情,通过反射的方式调用目标类的目标方法 -->
 	<bean id="jobDetail"
 		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
@@ -196,8 +196,7 @@
 		任务工厂类
 		可以简单理解为这是一台手机
 	-->
-	<bean
-		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<!--
 			注入触发器
 			可以简单理解为闹钟的集合
@@ -210,8 +209,24 @@
 
 		</property>
 	</bean>
-	
-	
+
+
+	<!-- 发布订单webService -->
+	<jaxrs:server address="/promotionService">
+
+		<jaxrs:serviceBeans>
+			<ref bean="promotionServiceImpl" />
+		</jaxrs:serviceBeans>
+
+
+		<jaxrs:inInterceptors>
+			<bean class="org.apache.cxf.interceptor.LoggingInInterceptor"></bean>
+		</jaxrs:inInterceptors>
+
+		<jaxrs:outInterceptors>
+			<bean class="org.apache.cxf.interceptor.LoggingOutInterceptor"></bean>
+		</jaxrs:outInterceptors>
+	</jaxrs:server>
 
 
 </beans>

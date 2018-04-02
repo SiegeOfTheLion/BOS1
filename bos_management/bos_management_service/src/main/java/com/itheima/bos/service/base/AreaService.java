@@ -20,6 +20,8 @@ public interface AreaService {
 
     List<Area> findByQ(String q);
 
+    List<Area> exportCharts();
+
 
 }
   
